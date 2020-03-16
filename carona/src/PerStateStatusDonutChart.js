@@ -5,7 +5,7 @@ import axios from 'axios';
 
 
 
-function MyChart() {
+function MyChart(props) {
 
 
   const [data, setData] = useState([{}]);
@@ -14,20 +14,20 @@ function MyChart() {
     let ignore = false;
     async function fetchData() {
       if (ignore) return
-      const result = await axios('https://covidtracking.com/api/us');
-      if (!ignore) setData(result.data);
+      const result = await axios('https://covidtracking.com/api/states');
+      if (!ignore) setData(result.data.filter(item => item.state === props.state));
       if (!ignore) setDataLoaded(true);
     }
     fetchData();
     return () => { ignore = true; }
 
-  },[]);
+  },[props]);
 
 
 
   return (
 <div>
-<h2>Current Testing </h2>
+<h2>Current Testing {props.state}</h2>
       {
         (dataLoaded===true)
         ? <Doughnut

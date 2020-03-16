@@ -16,6 +16,12 @@
   color: white;
 }
 
+.Main-chart-container {
+  /* border: 1px solid red; */
+  max-width: 800px;
+  margin: auto;
+}
+
 .App-link {
   color: #61dafb;
 }
