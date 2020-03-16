@@ -31,11 +31,11 @@ function MyChart() {
   // })
   return (
 <div>
-<h2>Current US Testing </h2>
+<h2>Current Testing </h2>
       {
         (dataLoaded===true)
         ? <Doughnut data={{
-            labels: ['Positive', 'Negative', 'Pending', 'Dead'],
+            labels: ['Positive', 'Negative', 'Pending', 'Deaths'],
             datasets: [{
                 label: '# of Tests',
                 data: [

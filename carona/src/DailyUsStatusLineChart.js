@@ -27,31 +27,84 @@ function MyChart() {
 
   return (
 <div>
-<h2>Current US Testing </h2>
+<h2>Daily Testing </h2>
       {
         (dataLoaded===true)
         ? <Line data={{
+          labels: data.map(item => "" + Math.floor(item.date/10000) + "-" + Math.floor(item.date/100) % 1000 + "-" + item.date % 100),
           spanGaps: true,
           datasets: [
-            {
-              spanGaps: true,
 
-            label: '# of States',
-            data: data.map((item,index) => {
-              console.log(index,": ",item)
-              return {x: index, y: item.states}
-            }),
-            backgroundColor: 'rgba(54, 162, 235, 0.8)',
-            borderColor: 'rgba(54, 162, 235, 1)',
-            borderWidth: 1
-          },
-        //   {
-        //   label: '# of Deaths',
-        //   data: data.map(item => item.death != null ? item.death : 0),
-        //   backgroundColor: 'rgba(255, 99, 132, 0.8)',
-        //   borderColor: 'rgba(255, 99, 132, 1)',
-        //   borderWidth: 1
-        // },
+            // 'rgba(255, 99, 132, 0.8)',
+            // 'rgba(54, 162, 235, 0.8)',
+            // 'rgba(255, 206, 86, 0.8)',
+            // 'rgba(75, 192, 192, 0.8)',
+
+          //   {
+          //     lineTension: 0,
+          //     spanGaps: true,
+          //
+          //   label: '# of States',
+          //   data: data.map((item,index) => {
+          //     console.log(index,": ",item)
+          //     return item.states
+          //   }),
+          //   backgroundColor: 'rgba(54, 162, 235, 0.8)',
+          //   borderColor: 'rgba(54, 162, 235, 1)',
+          //   borderWidth: 1
+          // },
+          {
+            spanGaps: true,
+
+          label: '# of Deaths',
+          data: data.map((item,index) => {
+            console.log(index,": ",item)
+            return item.death === null ? 0 : item.death
+          }),
+          backgroundColor: 'rgba(75, 192, 192, 0.8)',
+          borderColor: 'rgba(75, 192, 192, 1)',
+          borderWidth: 1
+        },
+          {
+            lineTension: 0,
+            spanGaps: true,
+
+          label: '# of Pending',
+          data: data.map((item,index) => {
+            console.log(index,": ",item)
+            return item.pending
+          }),
+          backgroundColor: 'rgba(255, 206, 86, 0.8)',
+          borderColor: 'rgba(255, 206, 86, 1)',
+          borderWidth: 1
+        },
+        {
+          lineTension: 0,
+          spanGaps: true,
+
+        label: '# of Positive',
+        data: data.map((item,index) => {
+          console.log(index,": ",item)
+          return item.positive
+        }),
+        backgroundColor: 'rgba(255, 99, 132, 0.8)',
+        borderColor: 'rgba(255, 99, 132, 1)',
+        borderWidth: 1
+      },
+      {
+        lineTension: 0,
+        spanGaps: true,
+
+      label: '# of Negative',
+      data: data.map((item,index) => {
+        console.log(index,": ",item)
+        return item.negative
+      }),
+      backgroundColor: 'rgba(54, 162, 235, 0.8)',
+      borderColor: 'rgba(54, 162, 235, 1)',
+      borderWidth: 1
+    },
+
         ]
 
         }}/>
