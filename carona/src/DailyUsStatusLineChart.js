@@ -2,12 +2,12 @@ import React, {useState, useEffect} from 'react';
 import './App.css';
 import { Doughnut, Line } from 'react-chartjs-2';
 import axios from 'axios';
+import regression from 'regression';
 
 
 
 function MyChart() {
-
-
+  const [thisRegression, setThisRegression] = useState(null);
   const [data, setData] = useState([{}]);
   const [dataLoaded, setDataLoaded] = useState(false);
   useEffect(() => {
@@ -18,6 +18,11 @@ function MyChart() {
       const result = await axios('https://covidtracking.com/api/us/daily');
       if (!ignore) setData(result.data);
       if (!ignore) setDataLoaded(true);
+      if (!ignore) {
+        const thisData = result.data.map((item,index) => [index, item.positive === null ? 0 : item.positive]);
+        const thisThisRegression = await regression.exponential(thisData);
+        setThisRegression(thisThisRegression)
+      }
     }
     fetchData();
     return () => { ignore = true; }
@@ -39,19 +44,6 @@ function MyChart() {
             // 'rgba(255, 206, 86, 0.8)',
             // 'rgba(75, 192, 192, 0.8)',
 
-          //   {
-          //     lineTension: 0,
-          //     spanGaps: true,
-          //
-          //   label: '# of States',
-          //   data: data.map((item,index) => {
-          //     console.log(index,": ",item)
-          //     return item.states
-          //   }),
-          //   backgroundColor: 'rgba(54, 162, 235, 0.8)',
-          //   borderColor: 'rgba(54, 162, 235, 1)',
-          //   borderWidth: 1
-          // },
           {
             spanGaps: true,
 
@@ -134,7 +126,9 @@ function MyChart() {
         // }}/>
         : <p>Loading...</p>
       }
-
+<div>
+    {  (thisRegression===null) ? <p>Loading...</p> : <h3>Approximate "Positive" Doubling Time: {Math.round(100* Math.log(2)/thisRegression.equation[1])/100} days (r2={thisRegression.r2})</h3> }
+</div>
 </div>
   );
 }
