@@ -5,7 +5,8 @@ import axios from 'axios';
 import regression from 'regression';
 
 
-function MyChart(props) {
+
+function MyChart() {
   const [thisRegression, setThisRegression] = useState(null);
   const [data, setData] = useState([{}]);
   const [dataLoaded, setDataLoaded] = useState(false);
@@ -13,22 +14,25 @@ function MyChart(props) {
     let ignore = false;
     async function fetchData() {
       if (ignore) return
-      const result = await axios('https://covidtracking.com/api/states/daily');
-      if (!ignore) setData(result.data.filter(item => item.state === props.state).sort(sortDataEach));
+      // const result = await axios('https://covidtracking.com/api/us');
+      const result = await axios('https://covidtracking.com/api/us/daily');
+
+      if (!ignore) setData(result.data.sort(sortDataEach));
       if (!ignore) setDataLoaded(true);
       if (!ignore) {
-        const thisData = result.data.filter(item => item.state === props.state && item.positive != 0).sort(sortDataEach).map((item,index) => [index, item.positive === null ? 0 : item.positive]);
+
+        const thisData = result.data.filter(item => item.date > 20200601).map((item,index) => [index, item.positive === null ? 0 : item.positive]);
+        console.log(thisData)
         const thisThisRegression = await regression.exponential(thisData);
-        console.log("data: ", thisData);
-        console.log("regression: ", thisThisRegression);
         setThisRegression(thisThisRegression)
       }
     }
     fetchData();
     return () => { ignore = true; }
 
-  },[props]);
+  },[]);
 
+  
   const sortDataEach = (a,b) => {
     if (a.date > b.date) {
       return 1;
@@ -36,9 +40,11 @@ function MyChart(props) {
     return -1;
   }
 
+  
+
   return (
 <div>
-<h2>Daily Testing {props.state}</h2>
+<h2>Daily Testing </h2>
       {
         (dataLoaded===true)
         ? <Line data={{
@@ -51,19 +57,6 @@ function MyChart(props) {
             // 'rgba(255, 206, 86, 0.8)',
             // 'rgba(75, 192, 192, 0.8)',
 
-          //   {
-          //     lineTension: 0,
-          //     spanGaps: true,
-          //
-          //   label: '# of States',
-          //   data: data.map((item,index) => {
-          //     console.log(index,": ",item)
-          //     return item.states
-          //   }),
-          //   backgroundColor: 'rgba(54, 162, 235, 0.8)',
-          //   borderColor: 'rgba(54, 162, 235, 1)',
-          //   borderWidth: 1
-          // },
           {
             spanGaps: true,
 
@@ -81,7 +74,7 @@ function MyChart(props) {
 
           label: '# of Pending',
           data: data.map((item,index) => {
-            return item.pending === null ? 0 : item.pending
+            return item.pending
           }),
           backgroundColor: 'rgba(255, 206, 86, 0.8)',
           borderColor: 'rgba(255, 206, 86, 1)',
@@ -93,7 +86,7 @@ function MyChart(props) {
 
         label: '# of Positive',
         data: data.map((item,index) => {
-          return item.positive === null ? 0 : item.positive
+          return item.positive
         }),
         backgroundColor: 'rgba(255, 99, 132, 0.8)',
         borderColor: 'rgba(255, 99, 132, 1)',
@@ -105,7 +98,7 @@ function MyChart(props) {
 
       label: '# of Negative',
       data: data.map((item,index) => {
-        return item.negative === null ? 0 : item.negative
+        return item.negative
       }),
       backgroundColor: 'rgba(54, 162, 235, 0.8)',
       borderColor: 'rgba(54, 162, 235, 1)',
@@ -146,10 +139,9 @@ function MyChart(props) {
         // }}/>
         : <p>Loading...</p>
       }
-      <div>
-          {  (thisRegression===null) ? <p>Loading...</p> : <h3>Approximate "Positive" Doubling Time: {Math.round(100* Math.log(2)/thisRegression.equation[1])/100} days (r2={thisRegression.r2})</h3> }
-      </div>
-
+<div>
+    {  (thisRegression===null) ? <p>Loading...</p> : <h3>Approximate "Positive" Doubling Time (Since June 1): {Math.round(100* Math.log(2)/thisRegression.equation[1])/100} days (r2={thisRegression.r2})</h3> }
+</div>
 </div>
   );
 }
